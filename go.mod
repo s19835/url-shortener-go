@@ -1,5 +1,5 @@
-module github.com/s19835/url-shortner-go
+module github.com/s19835/url-shortener-go
 
 go 1.24.0
 
-require github.com/joho/godotenv v1.5.1 // indirect
+require github.com/joho/godotenv v1.5.1
