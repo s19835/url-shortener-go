@@ -1,0 +1,64 @@
+package models
+
+import (
+	"time"
+)
+
+// URL represents the core shortened URL entity stored in PostgreSQL
+type URL struct {
+	ID          uint      `json:"id" db:"id"`                                             // Auto-incrementing primary key
+	ShortCode   string    `json:"short_code" db:"short_code"`                             // Unique identifier (e.g., "abc123")
+	OriginalURL string    `json:"original_url" db:"original_url" validate:"required,url"` // Must be a valid URL
+	UserID      *string   `json:"user_id,omitempty" db:"user_id"`                         // Optional user association
+	CreatedAt   time.Time `json:"created_at" db:"created_at"`                             // Auto-set on creation
+	ExpiresAt   time.Time `json:"expires_at" db:"expires_at"`                             // Default: created_at + 30 days
+	ClickCount  int       `json:"click_count" db:"click_count"`                           // Auto-incremented on redirect
+	IsActive    bool      `json:"is_active" db:"is_active"`                               // Can be deactivated
+}
+
+// ShortenRequest represents the API payload for creating short URLs
+type ShortenRequest struct {
+	URL         string         `json:"url" validate:"required,url"`                          // Required long URL
+	CustomAlias *string        `json:"custom_alias,omitempty" validate:"omitempty,alphanum"` // Optional custom short code
+	ExpiresIn   *time.Duration `json:"expires_in,omitempty"`                                 // Optional expiry (e.g., "24h")
+}
+
+// ShortenResponse represents the API response after shortening
+type ShortenResponse struct {
+	ShortURL    string    `json:"short_url"`    // Full short URL (e.g., "https://short.ly/abc123")
+	OriginalURL string    `json:"original_url"` // Echoes the submitted URL
+	ExpiresAt   time.Time `json:"expires_at"`   // Calculated expiration timestamp
+	ClickCount  int       `json:"click_count"`  // Always 0 initially
+}
+
+// URLStats represents analytics data for a short URL
+type URLStats struct {
+	ShortCode     string         `json:"short_code"`
+	TotalClicks   int            `json:"total_clicks"`
+	LastClickedAt time.Time      `json:"last_clicked_at"`
+	BrowserStats  map[string]int `json:"browser_stats,omitempty"` // Browser breakdown
+	CountryStats  map[string]int `json:"country_stats,omitempty"` // Geographic breakdown
+}
+
+// User represents an account (future auth implementation)
+type User struct {
+	ID        string    `json:"id" db:"id"`
+	Email     string    `json:"email" db:"email" validate:"email"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
+	APIKey    string    `json:"-" db:"api_key"` // Never serialized to JSON
+}
+
+// ErrorResponse standardizes error messages
+type ErrorResponse struct {
+	Error     string `json:"error"`
+	Code      int    `json:"code"`
+	Details   string `json:"details,omitempty"`
+	RequestID string `json:"request_id,omitempty"` // For correlating logs
+}
+
+// CachedURL represents the Redis cache structure
+type CachedURL struct {
+	OriginalURL string `json:"original_url"`
+	ExpiresAt   int64  `json:"expires_at"` // Unix timestamp
+	Metadata    string `json:"metadata"`   // Reserved for future use
+}
