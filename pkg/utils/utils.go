@@ -3,9 +3,11 @@ package utils
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"net/url"
 	"strings"
+	"unicode"
 )
 
 const (
@@ -79,6 +81,21 @@ func normalizeURL(rawURL string) (string, error) {
 	// Sort Query parameters?
 
 	return u.String(), nil
+}
+
+// validate short code
+func ValidateShortCode(shortCode string) error {
+	if len(shortCode) < 3 || len(shortCode) > 8 {
+		return errors.New("Code must be 3-8 character long.")
+	}
+
+	for _, r := range shortCode {
+		if !unicode.IsLetter(r) && !unicode.IsNumber(r) {
+			return errors.New("Code must contain letters and numbers.")
+		}
+	}
+
+	return nil
 }
 
 // helper function for base62 encoding
