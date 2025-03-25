@@ -53,3 +53,21 @@ func (s *URLService) ShortenURL(ctx context.Context, originalURL string, expiry 
 
 	return shortCode, nil
 }
+
+func (s *URLService) GetOriginalURL(ctx context.Context, shortCode string) (string, error) {
+	// Try to get from cache file
+	cachedURL, err := s.redis.Get(ctx, shortCode).Result()
+	if err == nil {
+		return cachedURL, err
+	}
+
+	// fall back to database
+	url, err := s.repo.FindByShortCode(ctx, shortCode)
+	if err != nil {
+		return "", fmt.Errorf("Error: Url not found : %w", err)
+	}
+
+	// cache the result for feature request
+
+	return url.OriginalURL, nil
+}
