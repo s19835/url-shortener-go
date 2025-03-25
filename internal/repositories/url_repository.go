@@ -35,7 +35,18 @@ func (p *postgresURLRepository) Create(ctx context.Context, url *models.URL) err
 
 // FindByShortCode implements URLRepository.
 func (p *postgresURLRepository) FindByShortCode(ctx context.Context, shortCode string) (*models.URL, error) {
-	panic("unimplemented")
+	query := `SELECT short_code, original_url, created_at, expires_at
+			FROM urls
+			WHERE short_code=$1
+	`
+	var url models.URL
+	err := p.db.QueryRow(ctx, query, shortCode).Scan(
+		&url.ShortCode,
+		&url.OriginalURL,
+		&url.CreatedAt,
+		&url.ExpiresAt)
+
+	return &url, err
 }
 
 func NewURLRepository(db_url string) (URLRepository, error) {
