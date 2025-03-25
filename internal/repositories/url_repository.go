@@ -10,7 +10,7 @@ import (
 )
 
 type URLRepository interface {
-	Create(ctx context.Context, url *models.URL)
+	Create(ctx context.Context, url *models.URL) error
 	FindByShortCode(ctx context.Context, shortCode string) (*models.URL, error)
 }
 
@@ -19,8 +19,18 @@ type postgresURLRepository struct {
 }
 
 // Create implements URLRepository.
-func (p *postgresURLRepository) Create(ctx context.Context, url *models.URL) {
-	panic("unimplemented")
+func (p *postgresURLRepository) Create(ctx context.Context, url *models.URL) error {
+	query := `INSERT INTO urls (short_code, original_url, created_at, expires_at)
+				VALUES ($1, $2, $3, $4)
+	`
+
+	_, err := p.db.Exec(ctx, query,
+		url.ShortCode,
+		url.OriginalURL,
+		url.CreatedAt,
+		url.ExpiresAt)
+
+	return err
 }
 
 // FindByShortCode implements URLRepository.
