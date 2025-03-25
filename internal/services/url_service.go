@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -50,6 +51,9 @@ func (s *URLService) ShortenURL(ctx context.Context, originalURL string, expiry 
 	}
 
 	// cache in redis
+	if err := s.cacheURL(ctx, url); err != nil {
+		fmt.Printf("Warning: failed to cache URL: %v\n", err)
+	}
 
 	return shortCode, nil
 }
@@ -68,6 +72,19 @@ func (s *URLService) GetOriginalURL(ctx context.Context, shortCode string) (stri
 	}
 
 	// cache the result for feature request
+	if err := s.cacheURL(ctx, url); err != nil {
+		fmt.Printf("Warning: failed to cache URL: %v\n", err)
+	}
 
 	return url.OriginalURL, nil
+}
+
+func (s *URLService) cacheURL(ctx context.Context, url *models.URL) error {
+	ttl := time.Until(url.ExpiresAt)
+
+	if ttl <= 0 {
+		return errors.New("URL already expried")
+	}
+
+	return s.redis.Set(ctx, url.ShortCode, url.OriginalURL, ttl).Err()
 }
