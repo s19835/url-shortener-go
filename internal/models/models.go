@@ -62,3 +62,9 @@ type CachedURL struct {
 	ExpiresAt   int64  `json:"expires_at"` // Unix timestamp
 	Metadata    string `json:"metadata"`   // Reserved for future use
 }
+
+type RedisConfig struct {
+	Address  string // Redis server address (e.g., "localhost:6379")
+	Password string // Authentication password (empty if none)
+	DB       int    // Redis database number (default: 0)
+}
