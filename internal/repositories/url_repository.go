@@ -49,8 +49,8 @@ func (p *postgresURLRepository) FindByShortCode(ctx context.Context, shortCode s
 	return &url, err
 }
 
-func NewURLRepository(db_url string) (URLRepository, error) {
-	pool, err := pgxpool.New(context.Background(), db_url)
+func NewURLRepository(cfg models.PostgresURL) (URLRepository, error) {
+	pool, err := pgxpool.New(context.Background(), cfg.URL)
 	if err != nil {
 		return nil, fmt.Errorf("unable to connect to database: %w", err)
 	}
