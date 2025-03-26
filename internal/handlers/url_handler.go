@@ -36,3 +36,15 @@ func (h *URLHandler) ShortenURL(c *gin.Context) {
 	shortURL := "http://" + c.Request.Host + "/" + shortCode
 	c.JSON(http.StatusCreated, models.ShortenResponse{ShortURL: shortURL})
 }
+
+func (h *URLHandler) RedirectURL(c *gin.Context) {
+	shortCode := c.Param("shortCode")
+
+	originalURL, err := h.service.GetOriginalURL(c.Request.Context(), shortCode)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.Redirect(http.StatusMovedPermanently, originalURL)
+}
