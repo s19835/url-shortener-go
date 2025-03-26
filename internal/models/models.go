@@ -69,6 +69,22 @@ type RedisConfig struct {
 	DB       int    // Redis database number (default: 0)
 }
 
+type Config struct {
+	Postgres PostgresURL
+	Redis    RedisURL
+	Server   ServerConfig
+}
+
+type PostgresURL struct {
+	URL string // postgres://user:pass@host:port/db?sslmode=disable
+}
+
 type RedisURL struct {
-	URL string
+	URL string // redis://:pass@host:port/db
+}
+
+type ServerConfig struct {
+	Port        string
+	Environment string
+	Timeout     time.Duration
 }
