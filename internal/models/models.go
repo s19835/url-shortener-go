@@ -68,3 +68,7 @@ type RedisConfig struct {
 	Password string // Authentication password (empty if none)
 	DB       int    // Redis database number (default: 0)
 }
+
+type RedisURL struct {
+	URL string
+}

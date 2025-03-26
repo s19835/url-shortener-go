@@ -17,12 +17,18 @@ type URLService struct {
 	redis *redis.Client
 }
 
-func NewURLService(repo repositories.URLRepository, redisCfg models.RedisConfig) *URLService {
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     redisCfg.Address,
-		Password: redisCfg.Password,
-		DB:       redisCfg.DB,
-	})
+func NewURLService(repo repositories.URLRepository, redisURL models.RedisURL) *URLService {
+	// rdb := redis.NewClient(&redis.Options{
+	// 	Addr:     redisCfg.Address,
+	// 	Password: redisCfg.Password,
+	// 	DB:       redisCfg.DB,
+	// })
+	opts, err := redis.ParseURL(redisURL.URL)
+	if err != nil {
+		panic(fmt.Sprintf("Failed to parse REDIS_URL: %v", err))
+	}
+
+	rdb := redis.NewClient(opts)
 
 	return &URLService{
 		repo:  repo,
