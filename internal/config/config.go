@@ -18,7 +18,7 @@ func Load() (*models.Config, error) {
 
 	return &models.Config{
 		Postgres: models.PostgresURL{
-			URL: getEnv("DB_URL", "postgres://shortener:zixwox-dExqow-nirgy@localhost:5432/shortly?sslmode=disable"),
+			URL: getEnv("DB_URL", "postgres://user:securepassword@localhost:5432/table_name?sslmode=disable"),
 		},
 		Redis: models.RedisURL{
 			URL: getEnv("REDIS_URL", "redis://localhost:6379/0"),
