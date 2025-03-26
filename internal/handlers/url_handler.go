@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/s19835/url-shortener-go/internal/models"
@@ -25,6 +26,10 @@ func (h *URLHandler) ShortenURL(c *gin.Context) {
 	}
 
 	// default expiry : 30 days if not specified
+	if req.ExpiresIn == nil || *req.ExpiresIn <= 0 {
+		defaultExpiry := 720 * time.Hour // 30 days
+		req.ExpiresIn = &defaultExpiry
+	}
 
 	shortCode, err := h.service.ShortenURL(c.Request.Context(), req.URL, *req.ExpiresIn)
 	if err != nil {

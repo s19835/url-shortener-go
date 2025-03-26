@@ -20,7 +20,7 @@ type URL struct {
 type ShortenRequest struct {
 	URL         string         `json:"url" validate:"required,url"`                          // Required long URL
 	CustomAlias *string        `json:"custom_alias,omitempty" validate:"omitempty,alphanum"` // Optional custom short code
-	ExpiresIn   *time.Duration `json:"expires_in,omitempty"`                                 // Optional expiry (e.g., "24h")
+	ExpiresIn   *time.Duration `json:"expires_in"`                                           // Optional expiry (e.g., "24h")
 }
 
 // ShortenResponse represents the API response after shortening
